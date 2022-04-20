@@ -3,7 +3,7 @@ import { CreateAdressDto } from 'src/dtos/adress/adress.dto';
 import { UpdateAdressDto } from 'src/dtos/adress/adress.update.dto';
 import { AdressService } from 'src/services/adress/adress.service';
 
-@Controller('user/:userId/person/:personId/adress/')
+@Controller('user/person/:personId/adress')
 export class AdressController {
 
   constructor( private readonly adressService: AdressService ){}
