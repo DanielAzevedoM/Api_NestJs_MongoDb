@@ -1,8 +1,5 @@
-import { ObjectID } from "typeorm";
-
 export interface Adress {
-   
-    _id: ObjectID;
+    _id: object;
     adress: string;
     city: string;
     state: string;

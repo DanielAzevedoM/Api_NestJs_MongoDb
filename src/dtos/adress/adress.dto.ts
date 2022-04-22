@@ -1,10 +1,9 @@
 import { IsNotEmpty } from "class-validator";
-import { ObjectID } from "typeorm";
 
 export class CreateAdressDto {
-   
-    _id: ObjectID;
 
+    _id: object;
+   
     @IsNotEmpty()
     adress: string;
 

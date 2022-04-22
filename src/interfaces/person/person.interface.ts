@@ -1,9 +1,7 @@
-import { ObjectID } from "typeorm";
-
 export interface Person {
-    
-    _id: ObjectID;
-    name: string
+
+    _id: object;
+    name: string;
     gender: string;
     birthday: Date;  
   

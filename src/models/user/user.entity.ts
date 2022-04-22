@@ -1,29 +1,28 @@
-import { Column, Entity, JoinColumn, ObjectID, ObjectIdColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, ObjectId } from 'mongoose';
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Person } from '../person/person.entity';
 import mongoose from 'mongoose';
+import { Person } from '../person/person.entity';
+import { BeforeInsert } from 'typeorm';
+import { v4 } from 'uuid';
+
 
 export type UserDocument = User & Document;
 
-@Entity() 
+@Schema() 
 export class User  {
-  
-  @ObjectIdColumn()
-  _id: ObjectID;
 
-  @Prop({required: true})
-  @Column()
+  @Prop()
   email: string
 
-  @Prop({required: true})
-  @Column()
+  @Prop()
   password: string;
+ 
+  @Prop({default: null, type: mongoose.Schema.Types.ObjectId, ref: 'Person'})
+  personId: Person;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Person })
-  @Column()
-  personId: Object;
+  @Prop({ default: false })
+  isDeleted: boolean;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-

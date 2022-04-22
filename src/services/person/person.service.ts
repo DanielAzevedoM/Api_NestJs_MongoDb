@@ -1,63 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Person as PersonEntity } from 'src/models/person/person.entity'; 
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Person as PersonEntity, PersonDocument } from 'src/models/person/person.entity'; 
 import { Person } from 'src/interfaces/person/person.interface';
-import { User as UserEntity} from 'src/models/user/user.entity';
+import { User as UserEntity, UserDocument} from 'src/models/user/user.entity';
 import { UpdatePerson } from 'src/interfaces/person/person.update.interface';
 
 
 @Injectable()
 export class PersonService {
     constructor(
-    @InjectRepository(PersonEntity) private readonly personRepository: Repository<PersonEntity>,
-    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>
+		@InjectModel(UserEntity.name) private userRepository: Model<UserDocument>,
+		@InjectModel(PersonEntity.name) private personRepository: Model<PersonDocument>,
     ){}
 
-	async create(param, person: Person): Promise<PersonEntity>{
-		const findUser = await this.userRepository.findOne(param.userId);	
+	async create(params, person: Person){
+	
+		const findUser = await this.userRepository.findById({ _id: params.userId });	
 
 		if(!findUser) return null;
 
-		return this.personRepository.save(person)
+		const result = new this.personRepository(person)
+
+		return result.save();
     }  
 
     async updateFk(params, person: Person): Promise<UserEntity>{
-		const findUser = await this.userRepository.findOne(params.userId);
+		const findUser = await this.userRepository.findById({ _id: params.userId });	
 
 		if(!findUser) return null;
 
-		const userUpdate = {
-			...findUser,
-			personId: person._id
-			
-		}
-
-		return this.userRepository.save(userUpdate);    
+		return this.userRepository.findByIdAndUpdate({ _id: findUser._id }, 
+            { personId: person._id}, 
+            { new: true })
     }
 
     async remove(params): Promise<PersonEntity>{
-		const findUser = await this.userRepository.findOne(params.userId);
-
-		const findPerson = await this.personRepository.findOne({ where: findUser.personId});
-
+		const findUser = await this.userRepository.findById({ _id: params.userId});
+	
 		if(!findUser) return null;
-		if(!findPerson) return null;
+	
+		if(findUser.personId !== null){
+
+			const findPerson = await this.personRepository.findById({ _id: findUser.personId});
+
+			await this.userRepository.findByIdAndUpdate({ _id: findUser.id }, 
+				{ personId: null }, 
+				{ new: true });
+
 		
-		const userUpdate = {
-			...findUser,
-			personId: null
-		}
+			return  this.personRepository.remove({findPerson}).exec()
+		}	
 
-		await this.userRepository.save(userUpdate);
-
-		return  this.personRepository.remove(findPerson)
+		return null;
 	}
 
 	async findOne(params): Promise<PersonEntity>{
-		const findUser = await this.userRepository.findOne(params.userId);
+		const findUser = await this.userRepository.findById({ _id: params.userId});
 
-		const findPerson = await this.personRepository.findOne({ where: findUser.personId });
+		const findPerson = await this.personRepository.findOne({ _id: findUser.personId });
 
 		if(!findUser) return null;
 		if(!findPerson) return null;
@@ -66,23 +67,22 @@ export class PersonService {
 	}
 
 	async update(params, person: UpdatePerson): Promise<PersonEntity>{
-		const findUser = await this.userRepository.findOne(params.userId);
+		const findUser = await this.userRepository.findById({ _id: params.userId});
 
-		const findPerson = await this.personRepository.findOne({ where: findUser.personId });
+		const findPerson = await this.personRepository.findOne({ _id: findUser.personId });
 
 		if(!findUser) return null;
 		if(!findPerson) return null;
 	
-        const personUpdate = {
-            ...findPerson,
-            name: person.newName,
-            gender: person.newGender,
-			birthday: person.newBirthday
-        }
+        
+		return  this.personRepository.findByIdAndUpdate({ _id: findPerson._id }, 
+			{ 	name: person.newName,
+				gender: person.newGender,
+				birthday: person.newBirthday
+			}, 
+			{ new: true });
 
-         return this.personRepository.save(personUpdate);    
     }
-	
 
 }
 

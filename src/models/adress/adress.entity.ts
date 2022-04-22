@@ -1,46 +1,34 @@
-import mongoose from 'mongoose';
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, ObjectId } from 'mongoose';
-import { Column, Entity, JoinColumn, ManyToOne, ObjectID, ObjectIdColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import mongoose from 'mongoose';
 import { Person } from '../person/person.entity';
-
-
 
 export type AdressDocument = Adress & Document;
 
-@Entity()
+@Schema()
 export class Adress {
   
-  @ObjectIdColumn()
-  _id: ObjectID;
-
-  @Prop({required: true})
-  @Column()
+  @Prop()
   adress: string;
 
-  @Prop({required: true})
-  @Column()
+  @Prop()
   city: string;
 
-  @Prop({required: true})
-  @Column()
+  @Prop()
   state: string;
 
-  @Prop({required: true})
-  @Column()
+  @Prop()
   postalCode: number;
 
-  @Prop({required: true})
-  @Column()
+  @Prop()
   country: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Person })
-  @Column()
-  personId: Object;
+  @Prop({default: null, type: mongoose.Schema.Types.ObjectId, ref: 'Person'})
+  personId: Person;
+
 
 }
 
 export const AdressSchema = SchemaFactory.createForClass(Adress);
-
 
 

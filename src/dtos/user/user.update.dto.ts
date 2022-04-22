@@ -3,9 +3,9 @@ import { IsUserAlreadyExist } from "src/validators/user/verifyEmailExists.valida
 import { ObjectID } from "typeorm";
 
 //Falta fazer validação de email.
-export class UpdateUserDto {
+export class UpdateUserDto {    
 
-    _id:ObjectID;
+
     
     @IsUserAlreadyExist({ message: `Email already exists`})
     @IsOptional()
