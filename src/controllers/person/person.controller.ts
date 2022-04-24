@@ -1,7 +1,7 @@
 import { Body, Controller, Delete,Get,Param, Patch, Post, Put, Req, Res, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { storage } from 'src/config/multer/multer.config';
+import { filter } from 'src/config/multer/multer.config';
 import { CreatePersonDto } from 'src/dtos/person/person.dto';
 import { UpdatePersonDto } from 'src/dtos/person/person.update.dto';
 import { PersonService } from 'src/services/person/person.service';
@@ -47,8 +47,10 @@ export class PersonController {
 
     @UseGuards(JwtAuthGuard)
     @Patch()
-    @UseInterceptors(FileInterceptor('image', {dest: 'src/uploads/person'}))
+    @UseInterceptors(FileInterceptor('image', {...filter}),
+    )
     uploadFile(@Param() params,@UploadedFile() file: Express.Multer.File) {
+
 
         return this.personService.updateSelfie(params , file.path)   
     }

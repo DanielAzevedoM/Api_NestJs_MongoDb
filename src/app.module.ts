@@ -10,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
 
 
+
 @Module({
   imports: [
     MongooseModule.forRootAsync({
@@ -20,6 +21,7 @@ import { MulterModule } from '@nestjs/platform-express';
 
     MulterModule.register({
       dest: './upload',
+      
     }),
     UserModule, 
     AdressModule,
