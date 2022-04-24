@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateAdressDto } from 'src/dtos/adress/adress.dto';
 import { UpdateAdressDto } from 'src/dtos/adress/adress.update.dto';
@@ -12,6 +13,7 @@ export class AdressController {
     @UseGuards(JwtAuthGuard)
     @Post()
     async create(@Param() params,@Body() createAdressDto: CreateAdressDto){
+        
         const adress = await this.adressService.create(params, createAdressDto);
 
         const adressUpdated =  await this.adressService.updateFk(params, adress);
