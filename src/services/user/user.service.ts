@@ -14,7 +14,7 @@ export class UserService {
 
     create(user: User){
         const result = new this.userRepository(user);
-        console.log(result)
+        
         return  result.save();
     }
     
@@ -23,7 +23,7 @@ export class UserService {
     }
 
     async findOne(id: string){
-        const findUser = await this.userRepository.findById(id);
+        const findUser = await this.userRepository.findById({ _id: id});
         
         if(!findUser) return null;
 
@@ -31,7 +31,7 @@ export class UserService {
     }
 
     async update(id: string, user:  UpdateUser){
-        const findUser = await this.userRepository.findById(id);
+        const findUser = await this.userRepository.findById({ _id: id});
 
         if(!findUser) return null;
     
@@ -52,14 +52,14 @@ export class UserService {
     }
 
     async verifyEmailExists(email: string){
-        const findUser = await this.userRepository.findOne({ email});
+        const findUser = await this.userRepository.findOne({email: email});
 
         return findUser;
     }
 
     async findOneGuard(email: string){
  
-        const findUser = await this.userRepository.findOne({email});
+        const findUser = await this.userRepository.findOne({email: email});
 
         return findUser;
     }
