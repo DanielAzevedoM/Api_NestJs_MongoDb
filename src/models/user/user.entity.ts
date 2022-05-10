@@ -1,9 +1,8 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId } from 'mongoose';
+import { Prop, Schema, SchemaFactory,  } from '@nestjs/mongoose';
+import { Document, Types, ObjectId } from 'mongoose';
 import mongoose from 'mongoose';
 import { Person } from '../person/person.entity';
-import { BeforeInsert } from 'typeorm';
-import { v4 } from 'uuid';
+import { ExcludeProperty } from 'nestjs-mongoose-exclude';
 
 
 export type UserDocument = User & Document;
@@ -12,9 +11,10 @@ export type UserDocument = User & Document;
 export class User  {
 
   @Prop()
-  email: string
+  email: string;
 
   @Prop()
+  @ExcludeProperty()
   password: string;
  
   @Prop({default: null, type: mongoose.Schema.Types.ObjectId, ref: 'Person'})
@@ -24,5 +24,6 @@ export class User  {
   isDeleted: boolean;
 
 }
+
 
 export const UserSchema = SchemaFactory.createForClass(User);

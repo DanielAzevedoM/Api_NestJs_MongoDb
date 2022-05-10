@@ -1,91 +1,76 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Adress as AdressEntity } from 'src/models/adress/adress.entity';
-import { Person as PersonEntity } from 'src/models/person/person.entity';
-import { Adress } from 'src/interfaces/adress/adress.interface';
-import { UpdateAdress } from 'src/interfaces/adress/adress.update.interface';
+import { Adress as AdressEntity, AdressDocument } from 'src/models/adress/adress.entity';
+import { Person as PersonEntity, PersonDocument } from 'src/models/person/person.entity';
+import { CreateAdressDto } from 'src/dtos/adress/adress.dto';
+import { UpdateAdressDto } from 'src/dtos/adress/adress.update.dto';
 
 @Injectable()
 export class AdressService {
     constructor(
-        @InjectModel(PersonEntity.name) private  personRepository: Model<PersonEntity>,
-        @InjectModel(AdressEntity.name) private  adressRepository: Model<AdressEntity>
+        @InjectModel(PersonEntity.name) private  personRepository: Model<PersonDocument>,
+        @InjectModel(AdressEntity.name) private  adressRepository: Model<AdressDocument>
     ){}
 
-    async create(params, adress: Adress){
-        const findPerson = await this.personRepository.findById({ _id: params.personId })
+    async create(adress: CreateAdressDto): Promise<AdressDocument>{
+        try{
 
-		if(!findPerson) return null;
+          return new this.adressRepository(adress).save();
 
-        const result = new this.adressRepository(adress);
+        } catch {
 
-        return result.save();
+            throw new HttpException('Unable to create person!', HttpStatus.NOT_FOUND)
+            
+        }
     }
     
-    async updateFk(params, adress: Adress) {   
-        const findPerson = await this.personRepository.findById({ _id: params.personId}); 
+    async updateFk(id: string, adress: CreateAdressDto): Promise<AdressDocument> {   
+        try{
+            const findPerson = await this.personRepository.findById(id); 
 
-        const findAdress = await this.adressRepository.findById({ _id: adress._id });
-
-        if(!findPerson) return null;
-        if(!findAdress) return null;
-
-        return  await this.adressRepository.findByIdAndUpdate({ _id: findAdress._id }, 
-            { personId: findPerson._id }, 
-            { new: true });
+            return  await this.adressRepository.findByIdAndUpdate(adress._id, 
+                { personId: findPerson._id }, 
+                { new: true });
+        } catch {
+            throw new HttpException('Unable to update personId!', HttpStatus.NOT_FOUND)
+        }
     }
 
-    async findAll(params){
-        const findPerson = await this.personRepository.findById({ _id: params.personId})
-
-        const findAdress = await this.adressRepository.find({ personId: findPerson._id })
-  
-		if(!findPerson) return null;
-
-        return findAdress;
+    async findAll(id: string): Promise<AdressDocument[]>{
+        try{
+            return this.adressRepository.find({ personId: id})
+        } catch {
+            throw new HttpException('Adresses not found!', HttpStatus.NOT_FOUND)
+        }
     }
 
-    async findOne(params){
-        const findPerson = await this.personRepository.findById({ _id: params.personId});
-
-        const findAdress = await this.adressRepository.findOne({ _id: params.id });
-
-		if(!findPerson) return null;
-        if(!findAdress) return null;
-
-        return findAdress;
+    async findOne(id: string): Promise<AdressDocument>{
+        try{
+            return this.adressRepository.findById(id);
+        } catch {
+            throw new HttpException('Adress not found!', HttpStatus.NOT_FOUND)
+        }
     }
 
-    async update(params, adress: UpdateAdress){
-       const findPerson = await this.personRepository.findById({ _id: params.personId});
 
-        const findAdress = await this.adressRepository.findOne({ _id: params.id });
-     
-		if(!findPerson) return null;
-        if(!findAdress) return null;
-        
-        return  await this.adressRepository.findByIdAndUpdate({ _id: findAdress._id }, 
-            {   
-                adress: adress.newAdress,
-                city: adress.newCity,
-                state: adress.newState,
-                postalCode: adress.newPostalCode,
-                country: adress.newCountry    
-            }, 
-            { new: true });
+    async update(id: string, adress: UpdateAdressDto): Promise<AdressDocument>{
+       try{
+            return this.adressRepository.findByIdAndUpdate(id , 
+                {  ...adress }, 
+                { new: true });
+       } catch {
+            throw new HttpException('Unable to update Adress!', HttpStatus.NOT_FOUND)
+       }
         
     }
 
-    async remove(params){
-        const findPerson = await this.personRepository.findById({ _id: params.personId});
-
-        const findAdress = await this.adressRepository.findById({ _id: params.id});
-
-		if(!findPerson) return null;
-        if(!findAdress) return null;
-       
-        return this.adressRepository.remove({_id: findAdress._id}).exec();
+    async remove(id: string): Promise<PersonDocument>{
+        try{
+            return this.adressRepository.remove({_id: id}).exec();
+        } catch {
+            throw new HttpException('Unable to delete Adress!', HttpStatus.NOT_FOUND)
+        }
     }
 
 

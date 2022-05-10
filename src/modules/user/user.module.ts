@@ -8,10 +8,11 @@ import { User, UserSchema } from '../../models/user/user.entity';
 
 
 
+
 @Module({
     imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]) ],
     controllers: [UserController],
-    providers: [UserService, verifyEmailExistsConstraint],
+    providers: [UserService],
     exports: [UserService]
 
     

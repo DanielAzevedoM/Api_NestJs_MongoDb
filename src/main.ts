@@ -10,7 +10,6 @@ async function bootstrap() {
     new ExpressAdapter()
   );
 
-
   app.useGlobalPipes(new ValidationPipe({
     transform: true
   }));

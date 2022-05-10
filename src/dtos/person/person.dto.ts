@@ -1,9 +1,9 @@
 import { IsNotEmpty } from "class-validator";
 
 export class CreatePersonDto {
-   
-  _id: object;
-  
+    
+  _id?: object;
+
   @IsNotEmpty()
   name: string;
 
@@ -13,7 +13,22 @@ export class CreatePersonDto {
   @IsNotEmpty()
   birthday: Date;
 
+  selfie: string;
+
 }
+
+
+export class UpdatePersonDto {
+   
+  name: string
+
+  gender: string;
+  
+  birthday: Date;
+
+}
+
+
 
 
 

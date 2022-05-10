@@ -2,57 +2,59 @@ import { Body, Controller, Delete,Get,Param, Patch, Post, Put, Req, Res, Uploade
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { filter } from 'src/config/multer/multer.config';
-import { CreatePersonDto } from 'src/dtos/person/person.dto';
-import { UpdatePersonDto } from 'src/dtos/person/person.update.dto';
+import { CreatePersonDto, UpdatePersonDto } from 'src/dtos/person/person.dto';
 import { PersonService } from 'src/services/person/person.service';
 
 
-@Controller('user/:userId/person')
+@Controller('user/person')
 export class PersonController {
 
     constructor( private readonly personService: PersonService ){}
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    async create(@Param() param,@Body() createPersonDto: CreatePersonDto){
+    async create(@Req() req, @Body() createPersonDto: CreatePersonDto){
+        await this.personService.remove(req.user.personId);
 
-        await this.personService.remove(param);
-
-        const person = await this.personService.create(param, createPersonDto);
+        const person = await this.personService.create(createPersonDto);
         
-       
-        const personUpdated = await this.personService.updateFk(param, person);
+        const personUpdated = await this.personService.updateFk(req.user.id, person);
 
         return personUpdated;
+          
     }
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    findOne(@Param() params) {
-        return this.personService.findOne(params);
+    findOne(@Req() req) {
+        return this.personService.findOne(req.user.personId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('location')
+    findByCityOrState(@Param() params) {
+        return this.personService.findByCityOrState(params.id);
     }
 
     @UseGuards(JwtAuthGuard)
     @Put()
-    update(@Param() params, @Body() UpdatePersonDto: UpdatePersonDto) {
-       return this.personService.update(params, UpdatePersonDto);
+    update(@Req() req, @Body() updatePersonDto: UpdatePersonDto) {
+       return this.personService.update(req.user.personId, updatePersonDto);
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete()   
-    remove(@Param() params) {
-
-        return this.personService.remove(params);
+    remove(@Req() req) {
+        return this.personService.remove(req.user.personId);
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch()
     @UseInterceptors(FileInterceptor('image', {...filter}),
     )
-    uploadFile(@Param() params,@UploadedFile() file: Express.Multer.File) {
+    uploadFile(@Req() req,@UploadedFile() file: Express.Multer.File) {
 
-
-        return this.personService.updateSelfie(params , file.path)   
+        return this.personService.updateSelfie(req.user.personId , file.path)   
     }
 }
 

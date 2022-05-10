@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class CreateAdressDto {
 
-    _id: object;
+    _id?: object;
    
     @IsNotEmpty()
     adress: string;

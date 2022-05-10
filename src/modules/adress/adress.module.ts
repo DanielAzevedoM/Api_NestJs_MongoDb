@@ -17,6 +17,7 @@ import { User, UserSchema } from 'src/models/user/user.entity';
     ])],
     controllers: [AdressController],
     providers: [AdressService],
+
     
   })
   export class AdressModule {}
