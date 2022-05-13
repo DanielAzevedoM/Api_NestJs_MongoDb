@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User as UserEntity, UserDocument } from '../../models/user/user.entity';
-import { User } from 'src/interfaces/user/user.interface';
 import { comparePasswords, encondePassword } from 'src/utils/bcrypt';
+import { UserDto } from 'src/dtos/user/user.dto';
 
 
 @Injectable()
@@ -42,7 +42,7 @@ export class AuthService {
 		}
 	}
 
-	async login(user: User): Promise<any> {
+	async login(user: UserDto): Promise<any> {
 		const findUser = await this.userRepository.findOne({email: user.email });
 	
 		const payload = { email: findUser.email, sub: findUser.id, personId: findUser.personId };
