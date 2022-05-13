@@ -54,7 +54,7 @@ export class AuthService {
 		}
 	}
 
-	async create(user: User): Promise<UserDocument> {
+	async create(user: UserDto): Promise<UserDocument> {
 	
 		const password = await encondePassword(user.password)
 
