@@ -1,11 +1,11 @@
-import { Controller, Get, Redirect } from "@nestjs/common";
+import { Controller, Get, Redirect } from '@nestjs/common';
 
-@Controller('')
+
+@Controller()
 export class AppController {
+  constructor() {}
 
-    @Get()
-    @Redirect('user')
-    redirect(){};// Perguntar como redirecionar sem ter que declarar uma função.
-    
-    
+  @Get()
+  @Redirect("")
+  getHello() { }
 }
