@@ -41,7 +41,7 @@ export class AdressService {
     }
 
     async delete(id: string){
-        const result = await this.adressRepository.remove({ id });
+        const result = await this.adressRepository.remove({ _id: id });
 
         if(!result) throw new HttpException(`Could not delete adress`, HttpStatus.NOT_FOUND);
 

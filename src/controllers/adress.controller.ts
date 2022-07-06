@@ -22,14 +22,14 @@ export class AdressController {
 
     @UseGuards(JwtAuthGuard)
     @Put('update/:id')
-    update(@Body() adress: Adress, @Req() req, @Param() param){
+    update(@Body() adress: Adress, @Param() param){
         return this.adressService.update(param.id, adress)
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete('delete/:id')
-    delete(@Req() req){
-        return this.adressService.delete(req.user.personId)
+    delete(@Param() params){
+        return this.adressService.delete(params.id)
     }
  
   

@@ -40,6 +40,8 @@ export class PersonService {
         
         const result = await this.personRepository.remove({ _id: id });
 
+        console.log(result)
+
         if(!result) throw new HttpException(`Could not delete user`, HttpStatus.BAD_REQUEST);
 
         return result;
